@@ -2,4 +2,5 @@
 const GALLERY_CONFIG = {
   totalPages: 28,
   aonCharlottePages: [],
+  handDrawingsCount: 31,
 };

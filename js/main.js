@@ -22,7 +22,7 @@
 
   /* ── Build slots array (images + AON Charlotte, NC card) ── */
   const gallery = document.getElementById('gallery');
-  const { totalPages, aonCharlottePages } = GALLERY_CONFIG;
+  const { totalPages, aonCharlottePages, handDrawingsCount } = GALLERY_CONFIG;
 
   // Each slot is { type:'image', pageNum } or { type:'coming-soon' }
   const slots = [];
@@ -33,6 +33,7 @@
   }
 
   const lastPageNum = slots.filter(s => s.type === 'image').at(-1).pageNum;
+  const portfolioImages = slots.map(slot => `images/page-${String(slot.pageNum).padStart(2, '0')}.jpg`);
 
   slots.forEach((slot, index) => {
     if (slot.type === 'image') {
@@ -47,10 +48,40 @@
       img.alt     = `Portfolio page ${slot.pageNum}`;
       img.loading = 'lazy';
       item.appendChild(img);
-      item.addEventListener('click', () => openLightbox(index));
+      item.addEventListener('click', () => openLightbox(portfolioImages, index));
       gallery.appendChild(item);
     }
   });
+
+  /* ── Illustration viewer (one drawing at a time, arrow-to-flip) ── */
+  const drawingImages = [];
+  if (handDrawingsCount) {
+    for (let i = 1; i <= handDrawingsCount; i++) {
+      drawingImages.push(`images/hand-drawings/drawing-${String(i).padStart(2, '0')}.jpg`);
+    }
+  }
+
+  const dv        = document.getElementById('drawing-viewer');
+  const dvImg     = document.getElementById('dv-img');
+  const dvCounter = document.getElementById('dv-counter');
+  const dvPrev    = dv ? dv.querySelector('.dv-prev') : null;
+  const dvNext    = dv ? dv.querySelector('.dv-next') : null;
+
+  let dvIndex = 0;
+
+  function showDrawing(index) {
+    dvIndex = (index + drawingImages.length) % drawingImages.length;
+    dvImg.src = drawingImages[dvIndex];
+    dvImg.alt = `Hand drawing ${dvIndex + 1}`;
+    dvCounter.textContent = `${String(dvIndex + 1).padStart(2, '0')} / ${String(drawingImages.length).padStart(2, '0')}`;
+  }
+
+  if (dv && dvImg && drawingImages.length) {
+    showDrawing(0);
+    dvPrev.addEventListener('click', () => showDrawing(dvIndex - 1));
+    dvNext.addEventListener('click', () => showDrawing(dvIndex + 1));
+    dvImg.addEventListener('click', () => openLightbox(drawingImages, dvIndex));
+  }
 
   /* ── Image-download deterrents (right-click + drag) ── */
   document.addEventListener('contextmenu', (e) => {
@@ -71,8 +102,10 @@
   const lbNext    = lb.querySelector('.lb-next');
 
   let current = 0;
+  let currentImages = portfolioImages;
 
-  function openLightbox(index) {
+  function openLightbox(images, index) {
+    currentImages = images;
     current = index;
     showSlot(current);
     lb.classList.add('active');
@@ -85,19 +118,17 @@
   }
 
   function showSlot(index) {
-    const slot = slots[index];
-    const num = String(slot.pageNum).padStart(2, '0');
-    lbImg.src = `images/page-${num}.jpg`;
+    lbImg.src = currentImages[index];
     lbImgWrap.style.display = '';
   }
 
   function prev() {
-    current = (current - 1 + slots.length) % slots.length;
+    current = (current - 1 + currentImages.length) % currentImages.length;
     showSlot(current);
   }
 
   function next() {
-    current = (current + 1) % slots.length;
+    current = (current + 1) % currentImages.length;
     showSlot(current);
   }
 

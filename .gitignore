@@ -6,3 +6,4 @@ package-lock.json
 # Local source PDFs — keep out of repo
 images/resume/*.pdf
 images/2026 New/
+images/Hand drawings/
