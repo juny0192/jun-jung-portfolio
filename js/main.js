@@ -32,8 +32,10 @@
     }
   }
 
-  const lastPageNum = slots.filter(s => s.type === 'image').at(-1).pageNum;
   const portfolioImages = slots.map(slot => `images/page-${String(slot.pageNum).padStart(2, '0')}.jpg`);
+  const lastPageNum = slots.filter(s => s.type === 'image').at(-1).pageNum;
+
+  let pairWrapper = null;
 
   slots.forEach((slot, index) => {
     if (slot.type === 'image') {
@@ -41,7 +43,7 @@
       const item = document.createElement('div');
       item.className = 'gallery-item';
       if (slot.pageNum === 1 || slot.pageNum === lastPageNum) {
-        item.classList.add('gallery-item--full');
+        item.classList.add('gallery-item--small');
       }
       const img = document.createElement('img');
       img.src     = `images/page-${num}.jpg`;
@@ -49,7 +51,18 @@
       img.loading = 'lazy';
       item.appendChild(img);
       item.addEventListener('click', () => openLightbox(portfolioImages, index));
-      gallery.appendChild(item);
+
+      if (slot.pageNum === 2) {
+        pairWrapper = document.createElement('div');
+        pairWrapper.className = 'gallery-pair';
+        gallery.appendChild(pairWrapper);
+        pairWrapper.appendChild(item);
+      } else if (slot.pageNum === 3 && pairWrapper) {
+        pairWrapper.appendChild(item);
+        pairWrapper = null;
+      } else {
+        gallery.appendChild(item);
+      }
     }
   });
 
