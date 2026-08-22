@@ -6,7 +6,7 @@ import puppeteer from 'puppeteer-core';
 
 const __dir     = fileURLToPath(new URL('.', import.meta.url));
 const CHROME    = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const PDF_PATH  = join(__dir, 'images', '2026 New', 'Resume 2026_New.pdf');
+const PDF_PATH  = join(__dir, 'images', 'resume', 'Resume.pdf');
 const OUT_DIR   = join(__dir, 'images', 'resume');
 const SCALE     = 4.5;
 const PORT      = 54324;
